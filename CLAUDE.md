@@ -2,28 +2,60 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
+## 🌐 Repository Information
+
+**GitHub Repository**: https://github.com/hardik121121/wm_help_assistant_final
+
+**What's Included** (ready to use):
+- ✅ 2,133 AI-enhanced chunks (5.2 MB)
+- ✅ Pre-built embeddings (60 MB) - saves ~$0.08
+- ✅ Pre-built BM25 index (64 MB) - instant startup
+- ✅ 1,549 semantically-named images
+- ✅ Complete documentation and evaluation results
+
+**Clone and Run**:
+```bash
+git clone https://github.com/hardik121121/wm_help_assistant_final.git
+cd wm_help_assistant_final
+cp .env.example .env
+# Edit .env with your API keys (see API Keys Required section)
+python3 -m venv venv
+source venv/bin/activate
+pip install -r requirements.txt
+./run_app.sh
+```
+
+**No reprocessing needed** - all cache files are included in the repository.
+
 ## Quick Reference (Most Critical Info)
 
 ### 🚀 Most Common Commands (90% of usage)
 
 ```bash
-# 1. Launch the Streamlit UI (most common)
+# 1. First Time Setup (after cloning)
+cp .env.example .env
+# Edit .env with your API keys
+python3 -m venv venv
+source venv/bin/activate
+pip install -r requirements.txt
+
+# 2. Launch the Streamlit UI (most common)
 ./run_app.sh
 
-# 2. Run comprehensive evaluation (test changes)
+# 3. Run comprehensive evaluation (test changes)
 python -m src.evaluation.comprehensive_evaluation
 
-# 3. Test end-to-end pipeline (single query)
+# 4. Test end-to-end pipeline (single query)
 python -m src.generation.end_to_end_pipeline
 
-# 4. Validate configuration
+# 5. Validate configuration
 python -m config.settings
 
-# 5. Reprocess documents (if chunks change - NOT RECOMMENDED)
-python -m src.ingestion.pymupdf_processor  # ~1 min (PRODUCTION)
+# 6. OPTIONAL: Reprocess documents (NOT NEEDED - data included)
+python -m src.ingestion.pymupdf_processor  # ~1 min
 python -m src.ingestion.hierarchical_chunker  # ~2 min
 
-# 6. Rebuild indexes (if chunks change - NOT RECOMMENDED)
+# 7. OPTIONAL: Rebuild indexes (NOT NEEDED - indexes included)
 python -m src.database.run_phase5  # ~5 min, $0.08
 ```
 
@@ -50,17 +82,43 @@ content = self.chunk_content_map.get(chunk_id, '')  # Always load from map
 - `src/retrieval/hybrid_search.py` - Content/metadata mapping fix
 - `src/query/query_expander.py` - 32 synonym mappings
 
+## ✅ Verify Installation
+
+After cloning and setting up .env, verify everything is ready:
+
+```bash
+# Check cache files exist
+ls -lh cache/*.pkl cache/*.json
+
+# Expected output:
+# cache/bm25_index.pkl (64M)
+# cache/hierarchical_chunks.json (5.2M)
+# cache/hierarchical_chunks_filtered.json (5.2M)
+# cache/hierarchical_embeddings.pkl (60M)
+
+# Check images
+ls cache/images/ | wc -l
+# Expected: 1549
+
+# Validate config
+python -m config.settings
+# Should show all API keys configured
+
+# Test imports
+python -c "from src.retrieval.hybrid_search import HybridSearch; print('✅ Imports working')"
+```
+
 ## Project Overview
 
 Maximum-quality RAG system for complex multi-topic queries across 2,257 pages of Watermelon documentation. Implements **query decomposition + hierarchical chunking + multi-step retrieval + advanced generation**.
 
 **Status**: ✅ **PRODUCTION READY** - All phases complete, evaluation shows excellent performance.
 
-### 🎯 Data Source: AI-Enhanced Chunks from docling_processor
+### 🎯 Data Source: AI-Enhanced Chunks (Included in Repository)
 
-**⭐ CRITICAL**: This system uses **pre-processed, AI-enhanced chunks** from the `docling_processor` repository:
+**⭐ CRITICAL**: This repository includes **all pre-processed, AI-enhanced data** ready to use:
 
-- **Source**: `../docling_processor/cache/hierarchical_chunks_enhanced_final.json`
+- **Location**: `cache/hierarchical_chunks.json` (in this repository)
 - **Chunks**: 2,133 AI-enhanced chunks (avg 282 tokens each)
 - **Images**: 1,549 semantically-named images
 - **Processing**: PyMuPDF-based (NOT Docling - see below)
@@ -84,7 +142,7 @@ Maximum-quality RAG system for complex multi-topic queries across 2,257 pages of
 
 **Production uses PyMuPDF, NOT Docling!**
 
-**What happened** (in `docling_processor` repo):
+**What happened** (historical context):
 - Docling failed at page 495/2257 (22%) due to OCR errors
 - Switched to PyMuPDF - completed all 2,257 pages in ~1 minute
 - File `cache/docling_processed.json` is **misleadingly named** - contains PyMuPDF output!
@@ -109,24 +167,25 @@ This is PyMuPDF's signature, NOT Docling's!
 
 ### 1. Data Integration Strategy (MOST CRITICAL)
 
-**✅ PRODUCTION DATA**: Pre-integrated AI-enhanced chunks from `docling_processor`
+**✅ PRODUCTION DATA**: Pre-integrated in this repository (no external dependencies)
 
-**Location**: `cache/hierarchical_chunks.json` (copied from `../docling_processor`)
-- ✅ Already in place - **DO NOT regenerate**
-- ✅ 2,133 chunks with AI metadata
-- ✅ 1,549 images in `cache/images/`
-- ✅ Embeddings and indexes generated (Phase 5 complete)
+**Location**: All data is in `cache/` directory
+- ✅ `cache/hierarchical_chunks.json` (5.2 MB, 2,133 chunks)
+- ✅ `cache/hierarchical_embeddings.pkl` (60 MB, 2,106 vectors)
+- ✅ `cache/bm25_index.pkl` (64 MB, 16,460 vocab terms)
+- ✅ `cache/images/` (1,549 images)
+- ✅ Ready to use immediately after cloning
 
-**Integration Details**:
-1. Chunks adapted from docling_processor enhanced format
-2. Full 23-field metadata preserved
-3. Images copied with semantic naming convention
-4. Integration verified (15/15 checks passed)
+**Historical Context** (for reference only):
+- Data originally from `../docling_processor` repository
+- Already integrated - no action needed
+- Full 23-field metadata preserved
+- Integration verified (15/15 checks passed)
 
 **When to Reprocess**:
-- ❌ **NEVER** unless PDF changes or integration breaks
-- ✅ Use existing chunks for all development
-- ✅ Embeddings cost $0.08 to regenerate
+- ❌ **NEVER** - all production data is included
+- ✅ Only if PDF changes or you want to experiment
+- ✅ Embeddings cost $0.08 to regenerate if needed
 
 ### 2. Critical Pinecone Metadata Fix (Nov 2, 2024)
 
@@ -153,7 +212,7 @@ merged_metadata = {**match.metadata, **full_metadata}
 
 **Best practice**: Run evaluations in batches of 5 queries across multiple days.
 
-### 4. RRF Weight Configuration (Nov 7, 2025)
+### 4. RRF Weight Configuration (Nov 7, 2024)
 
 **Tested Configurations**:
 - ✅ **50/50 (OPTIMAL)**: vector=0.5, bm25=0.5 → Precision 78%, MRR 100%
@@ -203,6 +262,10 @@ python -m src.evaluation.comprehensive_evaluation
 python -m src.query.query_decomposer
 python -m src.retrieval.hybrid_search
 python -m src.generation.answer_generator
+python -m src.database.embedding_generator
+python -m src.database.vector_store
+python -m src.database.bm25_index
+python -m src.retrieval.reranker
 ```
 
 **Note**: All modules with `if __name__ == "__main__"` can be tested independently.
@@ -244,27 +307,27 @@ Query → Decomposition → Multi-Step Retrieval → Generation → Answer
 
 ## Data Flow & Files
 
-**Inputs** (from docling_processor):
-- `../docling_processor/cache/hierarchical_chunks_enhanced_final.json` (5.37 MB)
-- `../docling_processor/cache/images_enhanced/` (1,549 images)
-- `.env` (API keys)
-- `tests/test_queries.json` (30 test queries)
-
-**Integrated Data** (in mw_help_asistant_2):
-- `cache/hierarchical_chunks.json` (5.17 MB, 2,133 chunks)
+**Integrated Data** (in this repository):
+- `cache/hierarchical_chunks.json` (5.2 MB, 2,133 chunks)
+- `cache/hierarchical_chunks_filtered.json` (5.2 MB, TOC-filtered version)
+- `cache/hierarchical_embeddings.pkl` (60 MB, 2,106 vectors)
+- `cache/bm25_index.pkl` (64 MB, 16,460 vocab terms)
 - `cache/images/` (1,549 images)
 - `cache/integration_stats.json` (integration metadata)
 
-**Phase 5 Outputs**:
-- `cache/hierarchical_embeddings.pkl` (60 MB, 2,106 vectors)
-- `cache/bm25_index.pkl` (64 MB, 16,460 vocab terms)
-- Pinecone index: `watermelon-docs-v2` (2,106 vectors, 3072-dim)
+**Configuration**:
+- `.env` (API keys - create from .env.example)
+- `tests/test_queries.json` (30 test queries)
+
+**Pinecone Index**:
+- Index name: `watermelon-docs-v2` (2,106 vectors, 3072-dim)
+- Created via `run_phase5.py` (or use existing if already created)
 
 **Evaluation Results**:
 - `tests/results/comprehensive_evaluation.json` (latest)
 - `tests/results/baseline_50_50_weights.json` (RRF weight baseline)
 
-## Performance Metrics (Latest Evaluation - Nov 7, 2025)
+## Performance Metrics (Latest Evaluation - Nov 7, 2024)
 
 ### 🎯 Evaluation Setup
 - **Queries Tested**: 5 complex multi-topic queries
@@ -312,7 +375,7 @@ Query → Decomposition → Multi-Step Retrieval → Generation → Answer
 ### 💰 Cost Breakdown
 
 **One-Time Setup**:
-- Embeddings (2,106 chunks): **$0.08**
+- Embeddings (2,106 chunks): **$0.08** (already done - included in repo)
 
 **Per Query**:
 - OpenAI embeddings: $0.0001
@@ -503,47 +566,80 @@ results = hybrid_search.search(
 
 ### Missing AI Metadata
 **Problem**: Chunks don't have topics/summaries
-**Solution**: Verify using chunks from docling_processor integration (cache/hierarchical_chunks.json)
+**Solution**: Verify using chunks from cache/hierarchical_chunks.json (already in repo)
+
+### Missing Cache Files
+**Problem**: Cache files not found after cloning
+**Solution**: Ensure you cloned from https://github.com/hardik121121/wm_help_assistant_final (not a fork without LFS)
+
+## Git and Version Control
+
+### What's in the Repository
+
+**Included in Git** (ready to use):
+- ✅ `cache/` directory with all processed data
+- ✅ `*.pkl` files (embeddings and indexes)
+- ✅ `cache/images/` (all 1,549 images)
+- ✅ Complete source code and documentation
+
+**Excluded from Git** (.gitignore):
+- ❌ `.env` (API keys - create from .env.example)
+- ❌ `data/*.pdf` (source PDF - 157MB, too large)
+- ❌ `venv/` (virtual environment)
+- ❌ `__pycache__/`, `*.pyc` (Python artifacts)
+- ❌ `logs/` (log files)
+
+### Large Files in Repository
+
+GitHub shows warnings for files >50MB (non-critical):
+- `cache/bm25_index.pkl`: 64 MB
+- `cache/hierarchical_embeddings.pkl`: 60 MB
+
+These are **intentionally included** to provide instant startup without regenerating embeddings. They're under GitHub's 100MB hard limit and pushed successfully.
+
+**Benefits**:
+- ✅ No need to run expensive embedding generation ($0.08 saved)
+- ✅ No need to wait ~5 minutes for index building
+- ✅ Clone and run immediately after setting API keys
 
 ## API Keys Required
 
-1. **OpenAI**: Embeddings (~$0.08 one-time, ~$0.0001 per query)
+1. **OpenAI**: Embeddings (~$0.0001 per query)
+   - Get key: https://platform.openai.com/api-keys
 2. **Pinecone**: Vector DB (free tier: 100K vectors)
+   - Get key: https://app.pinecone.io/
 3. **Cohere**: Reranking (free: 1000 requests/month)
+   - Get key: https://dashboard.cohere.com/api-keys
 4. **Groq**: LLM (free: 100K tokens/day ≈ 14 queries)
+   - Get key: https://console.groq.com/keys
 
-Get keys at: `docs/setup/api-keys.md`
+**Setup**: Copy `.env.example` to `.env` and add your keys.
 
-## Integration with docling_processor
+See also: `docs/setup/api-keys.md`
 
-### Data Flow
+## Integration with docling_processor (Historical Context)
+
+### Data Flow (Already Complete)
 
 ```
 docling_processor Repository:
   cache/hierarchical_chunks_enhanced_final.json (5.37 MB)
   cache/images_enhanced/ (1,549 images)
            ↓
-  integrate_with_rag.py (one-time integration)
+  integrate_with_rag.py (one-time integration - DONE)
            ↓
-mw_help_asistant_2 Repository:
-  cache/hierarchical_chunks.json (5.17 MB)
+wm_help_assistant_final Repository:
+  cache/hierarchical_chunks.json (5.2 MB)
   cache/images/ (1,549 images)
            ↓
-  run_phase5.py (embeddings + indexing)
+  run_phase5.py (embeddings + indexing - DONE)
            ↓
   cache/hierarchical_embeddings.pkl (60 MB)
   cache/bm25_index.pkl (64 MB)
   Pinecone: watermelon-docs-v2 (2,106 vectors)
 ```
 
-### Integration Verification
-
-```bash
-# Verify integration (in docling_processor root)
-python verify_integration.py
-
-# Should show: 15/15 checks passed ✅
-```
+**All steps complete** - data already in this repository.
 
 ### Integration Stats
 
@@ -557,10 +653,10 @@ python verify_integration.py
   "images_per_chunk": 0.73,
   "avg_token_count": 282,
   "content_types": {
-    "troubleshooting": 23.4%,
-    "integration": 22.4%,
-    "configuration": 14.5%,
-    "security": 8.3%
+    "troubleshooting": "23.4%",
+    "integration": "22.4%",
+    "configuration": "14.5%",
+    "security": "8.3%"
   }
 }
 ```
@@ -569,8 +665,8 @@ python verify_integration.py
 
 **Most critical non-obvious patterns**:
 
-1. **🔴 Using Pre-Integrated AI-Enhanced Data** - From docling_processor, NOT generated here!
-2. **🔴 PyMuPDF is Production, NOT Docling** - In docling_processor repo
+1. **🔴 All Data Included in Repository** - Clone and run, no external dependencies!
+2. **🔴 PyMuPDF is Production, NOT Docling** - Historical context only
 3. **Query Expansion is Automatic** - Every query → 3 variations (32 synonym mappings)
 4. **Dataclasses Everywhere** - No ORM, just dataclasses + pickle/JSON
 5. **Three-Map Pinecone Recovery** - content_map + metadata_map + embeddings (40KB limit workaround)
@@ -580,8 +676,8 @@ python verify_integration.py
 9. **23 Metadata Fields** - vs standard 5-8 in typical RAG systems
 
 **Most Common Errors to Avoid**:
-- ❌ Reprocessing PDF (use pre-integrated chunks!)
-- ❌ Assuming Docling is used (it's PyMuPDF in docling_processor!)
+- ❌ Trying to reprocess PDF (all data already included!)
+- ❌ Assuming Docling is used (it's PyMuPDF - historical note only)
 - ❌ Running files directly instead of `python -m src.module.name`
 - ❌ Forgetting content_map when retrieving from Pinecone
 - ❌ Assuming nested settings (they're flat)
@@ -596,7 +692,7 @@ python verify_integration.py
 | File Name | Actual Content | Why Misleading |
 |-----------|----------------|----------------|
 | `cache/hierarchical_chunks.json` | **AI-enhanced PyMuPDF chunks** | Integrated from docling_processor |
-| (in docling_processor) `cache/docling_processed.json` | **PyMuPDF output** | Named before switching processors |
+| `cache/docling_processed.json` | **PyMuPDF output** | Named before switching processors |
 
 **Verify**: Check metadata for AI fields (`topics`, `content_summary`) and PyMuPDF signatures (`font_size`)
 
@@ -610,7 +706,13 @@ python verify_integration.py
 - `docs/REFERENCE_CARD.md` - **Enhanced chunk structure reference** (AI metadata fields)
 - `docs/INTEGRATION_GUIDE.md` - **Integration documentation** (how chunks were integrated)
 
-## Recent Updates (Nov 7, 2025)
+## Recent Updates (Nov 7, 2024)
+
+### ✅ Repository Ready for Distribution
+- Pushed to GitHub: https://github.com/hardik121121/wm_help_assistant_final
+- All cache files included (no external dependencies)
+- Pre-built indexes save setup time and cost ($0.08)
+- Complete documentation and evaluation results
 
 ### ✅ Integration Complete
 - Integrated 2,133 AI-enhanced chunks from docling_processor
@@ -664,4 +766,4 @@ python verify_integration.py
 ---
 
 **Built for Maximum Quality. Designed for Complex Queries. Optimized for Production.**
-**Data Enhanced by AI. Powered by PyMuPDF. Integrated with Intelligence.**
+**Data Enhanced by AI. Powered by PyMuPDF. Ready to Deploy.**
