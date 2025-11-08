@@ -55,6 +55,10 @@ class Settings(BaseSettings):
     rrf_k: int = 60
     page_proximity: int = 3
 
+    # RRF Fusion Weights (balanced for precision + recall)
+    vector_weight: float = 0.5  # Semantic search (50%)
+    bm25_weight: float = 0.5    # Keyword search (50%)
+
     # Generation Config
     llm_model: str = "llama-3.3-70b-versatile"
     llm_temperature: float = 0.2

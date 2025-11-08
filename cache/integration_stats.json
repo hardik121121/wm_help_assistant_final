@@ -1,0 +1,19 @@
+{
+  "total_chunks": 2133,
+  "with_topics": 2034,
+  "with_summaries": 2133,
+  "with_code": 329,
+  "with_tables": 6,
+  "with_images": 719,
+  "content_types": {
+    "general": 382,
+    "integration": 477,
+    "configuration": 310,
+    "procedural": 206,
+    "security": 177,
+    "troubleshooting": 499,
+    "conceptual": 82
+  },
+  "avg_token_count": 282,
+  "total_pages": 2257
+}

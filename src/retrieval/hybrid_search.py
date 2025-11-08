@@ -108,8 +108,8 @@ class HybridSearch:
                query: str,
                query_embedding: List[float],
                top_k: Optional[int] = None,
-               vector_weight: float = 0.5,
-               bm25_weight: float = 0.5,
+               vector_weight: Optional[float] = None,
+               bm25_weight: Optional[float] = None,
                filter_toc: bool = True,
                metadata_filter: Optional[Dict] = None) -> List[Dict]:
         """
@@ -119,8 +119,8 @@ class HybridSearch:
             query: Query text
             query_embedding: Query embedding vector
             top_k: Number of results to return (default from settings)
-            vector_weight: Weight for vector search (0-1)
-            bm25_weight: Weight for BM25 search (0-1)
+            vector_weight: Weight for vector search (0-1, default from settings)
+            bm25_weight: Weight for BM25 search (0-1, default from settings)
             filter_toc: Filter out table of contents chunks
             metadata_filter: Optional Pinecone metadata filter
 
@@ -128,6 +128,8 @@ class HybridSearch:
             List of ranked chunks with scores
         """
         top_k = top_k or self.settings.vector_top_k
+        vector_weight = vector_weight if vector_weight is not None else self.settings.vector_weight
+        bm25_weight = bm25_weight if bm25_weight is not None else self.settings.bm25_weight
 
         logger.info(f"Hybrid search for query: '{query[:50]}...'")
         logger.info(f"  Vector weight: {vector_weight}, BM25 weight: {bm25_weight}")

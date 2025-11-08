@@ -39,7 +39,13 @@ if not input_file.exists():
 print(f"Loading chunks from: {input_file}")
 with open(input_file, 'r', encoding='utf-8') as f:
     data = json.load(f)
-    chunks = data.get('chunks', [])
+    # Handle both dict format (with 'chunks' key) and list format
+    if isinstance(data, dict):
+        chunks = data.get('chunks', [])
+    elif isinstance(data, list):
+        chunks = data
+    else:
+        raise ValueError(f"Unexpected data format: {type(data)}")
 
 print(f"Loaded {len(chunks)} chunks")
 

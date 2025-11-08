@@ -35,10 +35,10 @@ ENV/
 *.swp
 *.swo
 
-# Cache and data
-cache/
-*.pkl
-*.pickle
+# Cache and data (removed - needed for distribution)
+# cache/
+# *.pkl
+# *.pickle
 
 # PDF data (too large for GitHub - 150MB file)
 data/*.pdf
