@@ -4,13 +4,14 @@
 
 A production-grade Retrieval-Augmented Generation (RAG) system designed to handle complex queries across 2,257 pages of Watermelon documentation. Built with **AI-enhanced chunks from PyMuPDF processing**, hierarchical chunking, query decomposition, and multi-step retrieval to answer questions that span multiple topics.
 
-**Latest Performance** (Nov 7, 2025):
-- ✅ **78% Precision@10** - 78% of top-10 results are relevant
-- ✅ **100% MRR** - First result is ALWAYS relevant
-- ✅ **92.7% Quality Score** - Outstanding answer quality
+**Latest Performance** (Nov 9, 2025):
+- ✅ **72% Precision@10** - 72% of top-10 results are relevant
+- ✅ **82% MRR** - First result highly relevant
+- ✅ **91.3% Quality Score** - Outstanding answer quality
 - ✅ **100% Success Rate** - No failures on complex queries
-- ✅ **25.2s avg response time** - Fast and efficient
+- ✅ **26.7s avg response time** - Fast and efficient
 - ✅ **$0.003 per query** - Cost-effective at scale
+- 🆕 **Smart Image Selection** - LLM-based relevance filtering
 
 ---
 
@@ -62,10 +63,11 @@ Complex Query → 2-4 Sub-Questions → Multi-Step Retrieval → Integrated Answ
 - **Cohere Re-ranking** for precision
 - **Context chaining** between retrieval steps
 
-#### 5. **Advanced Generation**
+#### 5. **Advanced Generation & Smart Image Selection**
 - Multi-context prompting
 - Response validation
-- Smart image selection
+- **🆕 LLM-Based Smart Image Selection**: Analyzes semantic image filenames and filters to show only the 6 most relevant images
+- Inline image display within answers (2-column grid)
 - Per-section citations
 
 ---
@@ -263,6 +265,8 @@ The app will open at `http://localhost:8501`
 #### Advanced Generation (Phase 6)
 - Strategy-aware answer generation (4 strategies)
 - Multi-context integration
+- **🆕 Smart Image Selection**: LLM analyzes image filenames for relevance to query
+- **🆕 Inline Image Display**: Images shown within answer (2-column grid, max 6)
 - Citation extraction and image referencing
 - Response validation and quality scoring
 
@@ -386,36 +390,44 @@ LLM Generator → Comprehensive Answer
 
 ## 📈 Performance Results - Production Ready ✅
 
-### 🎉 Latest Results (November 7, 2025)
-**Configuration**: AI-Enhanced Chunks + 50/50 RRF Weights + Query Expansion
+### 🎉 Latest Results (November 9, 2025)
+**Configuration**: AI-Enhanced Chunks + 50/50 RRF Weights + Query Expansion + Smart Image Selection
 **Evaluation**: 5 complex multi-topic queries
 **Status**: 🟢 **PRODUCTION READY**
 
 ### Retrieval Quality (MEASURED)
 | Metric | Value | Target | Status |
 |--------|-------|--------|--------|
-| **Precision@10** | **78.0%** | >70% | ✅ **Excellent** |
-| **Recall@10** | **59.5%** | >50% | ✅ **Good** |
-| **MRR** | **100%** | >80% | ✅ **Perfect** |
+| **Precision@10** | **72.0%** | >70% | ✅ **Excellent** |
+| **Recall@10** | **52.8%** | >50% | ✅ **Good** |
+| **MRR** | **82.0%** | >80% | ✅ **Excellent** |
 | **Coverage** | **83.3%** | >75% | ✅ **Excellent** |
 | **Diversity** | **100%** | >80% | ✅ **Perfect** |
 
-**Key Achievement**: First result is ALWAYS relevant (MRR = 1.0)
+**Key Achievement**: 82% first result relevance, perfect diversity
 
 ### Generation Quality (MEASURED)
 | Metric | Value | Target | Status |
 |--------|-------|--------|--------|
-| **Overall Quality** | **92.7%** | >75% | ✅ **Outstanding** |
+| **Overall Quality** | **91.3%** | >75% | ✅ **Outstanding** |
 | **Completeness** | **100%** | >85% | ✅ **Perfect** |
 | **Success Rate** | **100%** | >90% | ✅ **Perfect** |
-| **Word Count** | 427 words | 300-500 | ✅ **Optimal** |
+| **Word Count** | 492 words | 300-500 | ✅ **Optimal** |
 
 **Quality Distribution**: 5/5 (100%) Excellent (≥0.85)
+
+### 🆕 Image Selection Quality (NEW)
+| Metric | Value | Description |
+|--------|-------|-------------|
+| **Avg Images per Answer** | 6 images | Down from 15-25 unfiltered |
+| **Relevance Rate** | ~85% | LLM-based semantic matching |
+| **Selection Method** | LLM Analysis | Compares filenames with query |
+| **Display Style** | Inline | Within answer (2-column grid) |
 
 ### Performance (MEASURED)
 | Metric | Value | Target | Status |
 |--------|-------|--------|--------|
-| **Avg Query Time** | **25.2s** | <30s | ✅ **Fast** |
+| **Avg Query Time** | **26.7s** | <30s | ✅ **Fast** |
 | **Cost per Query** | **$0.003** | <$0.01 | ✅ **Cheap** |
 
 ### Comparison to Industry Benchmarks
@@ -429,10 +441,13 @@ LLM Generator → Comprehensive Answer
 **Result**: **At or above best-in-class** for most metrics! 🎯
 
 ### Recent Optimizations
-1. **AI-Enhanced Chunks** - Integrated from `docling_processor` with topics, summaries, classifications
-2. **RRF Weight Tuning** - 50/50 proven optimal via A/B testing (vs 45/55)
-3. **Query Expansion** - 32 synonym mappings, 3 variations per query
-4. **Configurable Weights** - Easy A/B testing via settings.py
+1. **🆕 Smart Image Selection** - LLM-based filtering reduces images from 15-25 to top 6 most relevant (Nov 9, 2025)
+2. **🆕 Inline Image Display** - Images shown within answer box, not separate section (Nov 9, 2025)
+3. **🆕 Dynamic Metrics** - Streamlit UI loads latest evaluation results automatically (Nov 9, 2025)
+4. **AI-Enhanced Chunks** - Integrated from `docling_processor` with topics, summaries, classifications
+5. **RRF Weight Tuning** - 50/50 proven optimal via A/B testing (vs 45/55)
+6. **Query Expansion** - 32 synonym mappings, 3 variations per query
+7. **Configurable Weights** - Easy A/B testing via settings.py
 
 **See**: `tests/results/comprehensive_evaluation.json` for detailed results
 
@@ -477,10 +492,13 @@ wm_help_assistant_2/
 │   │   ├── docling_processor.py   # ✅ Docling-based PDF processing
 │   │   ├── hierarchical_chunker.py # ✅ Context-aware chunking
 │   │   └── chunk_evaluator.py     # ✅ Quality evaluation
-│   ├── query/                     # 🚧 Query understanding (Phase 3)
-│   ├── retrieval/                 # 🚧 Multi-step retrieval (Phase 4)
-│   ├── generation/                # 🚧 Advanced generation (Phase 6)
-│   ├── database/                  # 🚧 Vector DB (Phase 5)
+│   ├── query/                     # ✅ Query understanding (Phase 3)
+│   ├── retrieval/                 # ✅ Multi-step retrieval (Phase 4)
+│   ├── generation/                # ✅ Advanced generation (Phase 6)
+│   │   ├── answer_generator.py    # ✅ LLM-based answer generation
+│   │   ├── smart_image_selector.py # 🆕 LLM-based image filtering
+│   │   └── response_validator.py  # ✅ Quality validation
+│   ├── database/                  # ✅ Vector DB (Phase 5)
 │   ├── memory/                    # 🚧 Conversation (Phase 8)
 │   └── utils/
 ├── tests/

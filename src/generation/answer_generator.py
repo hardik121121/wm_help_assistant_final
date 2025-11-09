@@ -17,6 +17,7 @@ except ImportError:
 from config.settings import get_settings
 from src.retrieval.context_organizer import OrganizedContext
 from src.query.query_understanding import QueryUnderstanding
+from src.generation.smart_image_selector import SmartImageSelector
 
 logger = logging.getLogger(__name__)
 
@@ -76,6 +77,9 @@ class AnswerGenerator:
         self.model = model or self.settings.llm_model
         self.temperature = self.settings.llm_temperature
         self.max_tokens = self.settings.llm_max_tokens
+
+        # Initialize smart image selector
+        self.image_selector = SmartImageSelector()
 
         logger.info(f"Initialized AnswerGenerator with model: {self.model}")
 
@@ -138,7 +142,7 @@ class AnswerGenerator:
 
             # Extract citations and images
             citations = self._extract_citations(context)
-            images = self._extract_images(context)
+            images = self._extract_images_smart(query, context)
 
             result = GeneratedAnswer(
                 answer=answer_text,
@@ -366,7 +370,7 @@ Troubleshooting Guide:"""
         return citations
 
     def _extract_images(self, context: OrganizedContext) -> List[str]:
-        """Extract relevant images from context."""
+        """Extract all images from context (old method - kept for compatibility)."""
         images = []
 
         for chunk in context.chunks:
@@ -384,6 +388,36 @@ Troubleshooting Guide:"""
                 unique_images.append(img)
 
         return unique_images
+
+    def _extract_images_smart(self, query: str, context: OrganizedContext) -> List[str]:
+        """
+        Extract relevant images using smart LLM-based selection.
+
+        Args:
+            query: User's original query
+            context: Retrieved context with chunks
+
+        Returns:
+            List of relevant image paths, filtered by LLM
+        """
+        # First, get all available images
+        all_images = self._extract_images(context)
+
+        if not all_images:
+            logger.info("  No images available in context")
+            return []
+
+        logger.info(f"  Found {len(all_images)} total images, using smart selection...")
+
+        # Use smart selector to filter relevant images
+        selected_images = self.image_selector.select_relevant_images(
+            query=query,
+            all_images=all_images,
+            max_images=6  # Limit to 6 most relevant images
+        )
+
+        logger.info(f"  Smart selector chose {len(selected_images)} relevant images")
+        return selected_images
 
     def _estimate_confidence(self, context: OrganizedContext, answer: str) -> float:
         """Estimate confidence in answer quality."""

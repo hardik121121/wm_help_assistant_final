@@ -54,11 +54,13 @@ Processing takes ~27 seconds on average.
 
 ### 4. View Your Results
 
-The interface shows **3 tabs**:
+The interface shows your answer with **integrated features**:
 
-#### Tab 1: 📝 Answer
-- Comprehensive answer to your query
-- Relevant images in a grid (up to 9 images)
+#### 📝 Answer Section
+- **Comprehensive answer** to your query with step-by-step guidance
+- **🆕 Smart Image Selection**: Only the most relevant images (max 6, LLM-filtered)
+- **🆕 Inline Image Display**: Images appear within the answer box (2-column grid)
+- **Semantic Captions**: Readable image titles like "No Code Automation"
 - Clean, formatted markdown
 
 #### Tab 2: 🔧 Pipeline Details
@@ -113,14 +115,16 @@ What security features does Watermelon offer?
 - 📄 Documentation: 2,257 pages
 
 ### Performance Metrics
-Shows latest evaluation results:
-- Precision@10: **0.667** (+19%)
-- Recall@10: **0.638** (+43%)
-- MRR: **0.854** (+49%)
-- Avg Time: **27.7s**
+Shows **dynamically loaded** latest evaluation results:
+- Precision@10: **0.720** (72.0%)
+- Recall@10: **0.528** (52.8%)
+- MRR: **0.820** (82.0%)
+- Avg Time: **26.7s**
 - Quality: **100% Excellent**
+- 📅 Last updated: Nov 9, 2025
 
 ### Active Improvements
+- ✅ **🆕 Smart Image Selection** (LLM-based)
 - ✅ Query Expansion (3x variations)
 - ✅ Fine-tuned Decomposition
 
@@ -156,6 +160,14 @@ Toggle visibility of:
 - Each finds 30 results
 - Reciprocal Rank Fusion combines them
 - Cohere reranks to top 10 most relevant
+
+**🆕 Smart Image Selection**:
+- Retrieval finds chunks with 15-25 total images
+- **LLM analyzes** semantic filenames (e.g., "kubernetes_config", "no_code_automation")
+- **Compares with query** to determine relevance
+- **Filters to top 6** most relevant images
+- **Result**: Only helpful images shown, not all available images
+- **Example**: Query "How to setup Kubernetes?" shows only Kubernetes images, not unrelated MS Teams screenshots
 
 ---
 
